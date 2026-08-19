@@ -1,0 +1,93 @@
+<div class="dashboard">
+  <div class="header-row">
+    <p class="panel-title">Routing dashboard</p>
+    <button class="refresh-button" type="button" (click)="refresh()">Refresh</button>
+  </div>
+
+  @if (error()) {
+    <p class="error-banner">{{ error() }}</p>
+  }
+
+  @if (stats(); as s) {
+    <div class="tile-grid">
+      <div class="tile">
+        <p class="tile-value num">{{ s.totalRequests }}</p>
+        <p class="tile-label">requests routed</p>
+      </div>
+      <div class="tile">
+        <p class="tile-value num">{{ formatUsd(s.totalSavedUsd) }}</p>
+        <p class="tile-label">saved vs cloud-only baseline</p>
+      </div>
+      <div class="tile">
+        <p class="tile-value num">{{ s.savedPercent }}<span class="unit">%</span></p>
+        <p class="tile-label">of baseline cost avoided</p>
+      </div>
+      <div class="tile">
+        <p class="tile-value num">{{ s.sessionRequests }}</p>
+        <p class="tile-label">from your session</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="panel-title">Latency &amp; cost by route</p>
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th scope="col">Route</th>
+            <th scope="col" class="num-col">Requests</th>
+            <th scope="col" class="num-col">p50</th>
+            <th scope="col" class="num-col">p95</th>
+            <th scope="col" class="num-col">Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of s.byRoute; track row.route) {
+            <tr>
+              <td>{{ row.route }}</td>
+              <td class="num num-col">{{ row.requests }}</td>
+              <td class="num num-col">{{ row.p50Ms }}ms</td>
+              <td class="num num-col">{{ row.p95Ms }}ms</td>
+              <td class="num num-col">{{ formatUsd(row.costUsd) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p class="table-note">
+        Totals include generated seed history (so the dashboard is meaningful before you
+        route anything) plus every real request routed by visitors like you.
+      </p>
+    </div>
+
+    <div class="panel">
+      <p class="panel-title">Recent requests</p>
+      <div class="table-scroll">
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th scope="col">When</th>
+              <th scope="col">Route</th>
+              <th scope="col">Model</th>
+              <th scope="col" class="num-col">Complexity</th>
+              <th scope="col" class="num-col">Cost</th>
+              <th scope="col" class="num-col">Saved</th>
+              <th scope="col" class="num-col">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of s.recent; track row.createdAt) {
+              <tr [class.mine]="row.mine">
+                <td>{{ row.createdAt | date: 'MMM d, HH:mm' }}@if (row.mine) {<span class="mine-tag">you</span>}</td>
+                <td>{{ row.route }}@if (row.sensitive) {<span class="sensitive-tag">sensitive</span>}</td>
+                <td>{{ row.model }}</td>
+                <td class="num num-col">{{ row.complexity }}</td>
+                <td class="num num-col">{{ formatUsd(row.costUsd) }}</td>
+                <td class="num num-col">{{ formatUsd(row.savedUsd) }}</td>
+                <td class="num num-col">{{ row.totalMs }}ms</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

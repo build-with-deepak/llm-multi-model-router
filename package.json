@@ -1,0 +1,16 @@
+{
+  "name": "llm-multi-model-router",
+  "private": true,
+  "description": "Routes each LLM request between local inference and cloud models on cost, latency and data sensitivity — public demo",
+  "scripts": {
+    "dev:api": "pnpm --filter api start:dev",
+    "dev:web": "pnpm --filter web start",
+    "build:api": "pnpm --filter api build",
+    "build:web": "pnpm --filter web build",
+    "test:api": "pnpm --filter api test",
+    "test:web": "pnpm --filter web test",
+    "lint:api": "pnpm --filter api lint",
+    "db:reset": "node scripts/db-reset.mjs",
+    "db:cleanup": "node scripts/db-cleanup.mjs"
+  }
+}

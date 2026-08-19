@@ -1,0 +1,55 @@
+# Same shape as the sibling rag-privacy-first stack: postgres and api are
+# internal-only; web is the single host-bound service, on localhost only,
+# fronted by the VPS's own nginx (nginx/router.build-with-deepak.com.conf)
+# which terminates TLS. Ollama runs on the VPS outside Docker and is
+# reached via host.docker.internal.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: router
+      POSTGRES_USER: router
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - router_pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CORS_ORIGIN: https://router.build-with-deepak.com
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      DEMO_TOKEN_TTL: ${DEMO_TOKEN_TTL:-2h}
+      DATABASE_URL: postgres://router:${POSTGRES_PASSWORD}@postgres:5432/router
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3:8b}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      MAX_PROMPT_CHARS: ${MAX_PROMPT_CHARS:-2000}
+      HISTORY_RETENTION_DAYS: ${HISTORY_RETENTION_DAYS:-7}
+      RATE_LIMIT_TTL_MS: ${RATE_LIMIT_TTL_MS:-60000}
+      RATE_LIMIT_LIMIT: ${RATE_LIMIT_LIMIT:-15}
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - '127.0.0.1:8091:80'
+
+volumes:
+  router_pgdata:

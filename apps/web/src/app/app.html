@@ -1,0 +1,21 @@
+<div class="shell">
+  @if (auth.isAuthenticated()) {
+    <header class="topbar">
+      <div class="topbar-inner">
+        <p class="brand">Multi-Model Router</p>
+        <nav class="nav">
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Playground</a>
+          <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        </nav>
+        <div class="session">
+          <span class="session-badge">Demo session</span>
+          <button class="logout" type="button" (click)="logout()">Sign out</button>
+        </div>
+      </div>
+    </header>
+  }
+
+  <main class="content" [class.content-authed]="auth.isAuthenticated()">
+    <router-outlet />
+  </main>
+</div>

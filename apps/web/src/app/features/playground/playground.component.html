@@ -1,0 +1,128 @@
+<div class="playground">
+  <form class="prompt-form" (submit)="$event.preventDefault(); run()">
+    <textarea
+      class="prompt-input"
+      rows="4"
+      maxlength="2000"
+      placeholder="Enter a prompt — the router will decide where it runs and show you why…"
+      [(ngModel)]="prompt"
+      name="prompt"
+      [disabled]="isRunning()"
+    ></textarea>
+    <div class="controls-row">
+      <label class="budget-label">
+        Latency budget
+        <select class="budget-select" [(ngModel)]="latencyBudget" name="latencyBudget" [disabled]="isRunning()">
+          <option value="fast">Fast — first token matters most</option>
+          <option value="balanced">Balanced</option>
+          <option value="quality">Quality — take the time needed</option>
+        </select>
+      </label>
+      <button class="run-button" type="submit" [disabled]="isRunning() || !prompt().trim()">
+        {{ isRunning() ? 'Routing…' : 'Route it' }}
+      </button>
+    </div>
+  </form>
+
+  <p class="hint">
+    Tip: include an email address or the word “confidential” to watch the sensitivity
+    classifier force local inference.
+  </p>
+
+  @if (error()) {
+    <p class="error-banner">{{ error() }}</p>
+  }
+
+  @if (decision(); as d) {
+    <div class="panel decision-panel">
+      <p class="panel-title">Routing decision</p>
+      <p class="chosen-line">
+        <span class="route-badge" [class.badge-local]="d.chosen.tier === 'local'" [class.badge-cloud]="d.chosen.tier === 'cloud'">
+          {{ d.chosen.tier }}
+        </span>
+        <strong>{{ d.chosen.displayName }}</strong>
+      </p>
+      <ul class="reason-list">
+        @for (reason of d.reasons; track reason) {
+          <li>{{ reason }}</li>
+        }
+      </ul>
+
+      @if (d.sensitive) {
+        <p class="sensitive-note">
+          Sensitive content detected ({{ d.sensitivityCategories.join(', ') }}) — this
+          prompt was not sent to any cloud provider.
+        </p>
+      }
+
+      <details class="candidates">
+        <summary>All candidates considered ({{ d.candidates.length }})</summary>
+        <table class="candidate-table">
+          <thead>
+            <tr><th scope="col">Model</th><th scope="col">Tier</th><th scope="col">Verdict</th></tr>
+          </thead>
+          <tbody>
+            @for (candidate of d.candidates; track candidate.key) {
+              <tr>
+                <td>{{ candidate.displayName }}</td>
+                <td>{{ candidate.tier }}</td>
+                <td class="candidate-note">{{ candidate.note }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </details>
+    </div>
+  }
+
+  @for (fallback of fallbacks(); track fallback.failed) {
+    <p class="fallback-banner">
+      {{ fallback.failed }} failed ({{ fallback.reason }}) — falling back to {{ fallback.next }}.
+    </p>
+  }
+
+  @if (isRunning() && decision()) {
+    <p class="generating-note">Generating on {{ decision()!.chosen.displayName }}…</p>
+  }
+
+  @if (answer()) {
+    <div class="panel">
+      <p class="panel-title">Answer</p>
+      <p class="answer-text">{{ answer() }}</p>
+    </div>
+  }
+
+  @if (metrics(); as m) {
+    <div class="panel">
+      <p class="panel-title">This request</p>
+      <div class="metric-grid">
+        <div class="metric">
+          <p class="metric-value num">{{ formatUsd(m.costUsd) }}</p>
+          <p class="metric-label">actual cost — {{ m.model }}</p>
+        </div>
+        <div class="metric">
+          <p class="metric-value num">{{ formatUsd(m.baselineCostUsd) }}</p>
+          <p class="metric-label">cloud-only baseline cost</p>
+        </div>
+        <div class="metric">
+          <p class="metric-value num">{{ formatUsd(m.savedUsd) }}</p>
+          <p class="metric-label">saved by routing</p>
+        </div>
+        <div class="metric">
+          <p class="metric-value num">{{ m.ttfbMs }}<span class="unit">ms</span> / {{ m.totalMs }}<span class="unit">ms</span></p>
+          <p class="metric-label">first token / total</p>
+        </div>
+        <div class="metric">
+          <p class="metric-value num">{{ m.inputTokens }} + {{ m.outputTokens }}</p>
+          <p class="metric-label">input + output tokens</p>
+        </div>
+        @if (m.fallbackUsed) {
+          <div class="metric">
+            <p class="metric-value">fallback</p>
+            <p class="metric-label">a provider in the chain failed first</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
