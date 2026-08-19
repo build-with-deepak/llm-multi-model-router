@@ -55,4 +55,23 @@ describe('App', () => {
     fixture.detectChanges();
     expect(compiled.querySelector('.topbar')).toBeFalsy();
   });
+
+  it('carries the build-with-deepak.com brand footer with socials', async () => {
+    
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const footer = compiled.querySelector('app-brand-footer');
+    expect(footer).toBeTruthy();
+    expect(footer?.querySelector('img[alt="build-with-deepak.com"]')).toBeTruthy();
+
+    const hrefs = Array.from(footer?.querySelectorAll('a') ?? []).map((a) =>
+      a.getAttribute('href'),
+    );
+    expect(hrefs).toContain('https://www.linkedin.com/in/build-with-deepak');
+    expect(hrefs).toContain('https://github.com/build-with-deepak');
+    expect(hrefs).toContain('https://build-with-deepak.com');
+    expect(hrefs).toContain('mailto:entr.deepakjha@gmail.com');
+  });
 });

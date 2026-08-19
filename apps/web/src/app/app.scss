@@ -87,3 +87,22 @@
 .content-authed {
   padding: 2rem 1.5rem 3rem;
 }
+
+.topbar-logo {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+
+  img {
+    height: 1.5rem;
+    width: auto;
+    display: block;
+  }
+
+  &:hover {
+    border-color: var(--accent);
+  }
+}

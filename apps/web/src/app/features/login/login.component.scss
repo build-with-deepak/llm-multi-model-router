@@ -157,3 +157,35 @@ h1 {
   font-size: 0.875rem;
   cursor: pointer;
 }
+
+/* The big brand statement: the demo belongs to build-with-deepak.com before
+   it is anything else. Light chip because the logo artwork is drawn for
+   light backgrounds — same treatment as the main site's own footer. */
+.brand-lockup {
+  display: inline-flex;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 0.85rem 1.4rem;
+  margin-bottom: 0.9rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    border-color: var(--accent);
+  }
+}
+
+.brand-logo {
+  height: 4.25rem;
+  width: auto;
+  display: block;
+}
+
+.brand-line {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 1.75rem;
+}

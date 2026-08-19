@@ -2,6 +2,15 @@
   @if (auth.isAuthenticated()) {
     <header class="topbar">
       <div class="topbar-inner">
+        <a
+          class="topbar-logo"
+          href="https://build-with-deepak.com"
+          target="_blank"
+          rel="noopener"
+          aria-label="build-with-deepak.com home"
+        >
+          <img src="/build-with-light.png" alt="build-with-deepak.com" />
+        </a>
         <p class="brand">Multi-Model Router</p>
         <nav class="nav">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Playground</a>
@@ -18,4 +27,6 @@
   <main class="content" [class.content-authed]="auth.isAuthenticated()">
     <router-outlet />
   </main>
+
+  <app-brand-footer current="router" />
 </div>
