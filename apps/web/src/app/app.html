@@ -1,51 +1,61 @@
 <div class="shell">
-  @if (auth.isAuthenticated()) {
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="identity">
-          <a
-            class="topbar-logo"
-            href="https://build-with-deepak.com"
-            target="_blank"
-            rel="noopener"
-            aria-label="build-with-deepak.com home"
-          >
-            <img src="/build-with-light.png" alt="build-with-deepak.com" />
-          </a>
-          <div class="identity-text">
-            <a class="identity-name" href="https://build-with-deepak.com" target="_blank" rel="noopener">
-              Deepak Kumar Jha
-            </a>
-            <span class="identity-title">Technical Lead · Senior Node.js Engineer</span>
-          </div>
-        </div>
+  <!--
+    Unconditional, like the header in the other two demo apps and on
+    build-with-deepak.com itself — the brand identity and CV/LinkedIn/profile
+    links must survive a visitor landing before the silent demo-session
+    bootstrap resolves, not just after. Only the nav and the session-specific
+    controls stay behind the auth check.
+  -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="identity">
+        <a
+          class="topbar-logo"
+          href="https://build-with-deepak.com"
+          target="_blank"
+          rel="noopener"
+          aria-label="build-with-deepak.com home"
+        >
+          <img src="/build-with-light.png" alt="build-with-deepak.com" />
+        </a>
+        <a class="identity-text" href="https://build-with-deepak.com" target="_blank" rel="noopener">
+          <span class="identity-name">Deepak Kumar Jha</span>
+          <span class="identity-title">Technical Lead · Senior Node.js Engineer</span>
+        </a>
+      </div>
 
+      @if (auth.isAuthenticated()) {
         <nav class="nav">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Playground</a>
           <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
         </nav>
+      }
 
-        <div class="header-cta">
-          <a
-            class="cv-button"
-            href="https://build-with-deepak.com/Deepak_Kumar_Jha_Technical_Lead.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Download CV
-          </a>
-          <a class="profile-link" href="https://build-with-deepak.com" target="_blank" rel="noopener">
-            Full Profile →
-          </a>
-        </div>
+      <div class="header-cta">
+        <a
+          class="cv-button"
+          href="https://build-with-deepak.com/Deepak_Kumar_Jha_Technical_Lead.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Download CV
+        </a>
+        <a class="profile-link" href="https://www.linkedin.com/in/build-with-deepak/" target="_blank" rel="noopener me">
+          LinkedIn
+        </a>
+        <a class="profile-link" href="https://build-with-deepak.com" target="_blank" rel="noopener">
+          Full Profile →
+        </a>
+      </div>
 
+      @if (auth.isAuthenticated()) {
         <div class="session">
           <span class="session-badge">Demo session</span>
           <button class="logout" type="button" (click)="logout()">Sign out</button>
         </div>
-      </div>
-    </header>
-  }
+      }
+    </div>
+  </header>
 
   <main class="content" [class.content-authed]="auth.isAuthenticated()">
     <router-outlet />

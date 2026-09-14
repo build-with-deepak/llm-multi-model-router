@@ -24,11 +24,25 @@ describe('App', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('hides the nav chrome when signed out', async () => {
+  it('keeps the brand header — logo, CV, LinkedIn, profile — visible even when signed out', async () => {
+    // The header used to be wrapped in @if (auth.isAuthenticated()), which
+    // meant a visitor landing before (or after a failure of) the silent
+    // demo-session bootstrap saw no brand chrome at all — the one thing this
+    // app exists to never hide. Only the nav and the session badge/sign-out
+    // stay behind the auth check now.
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.topbar')).toBeFalsy();
+    expect(compiled.querySelector('.topbar')).toBeTruthy();
+    expect(compiled.querySelector('.topbar-logo img')).toBeTruthy();
+    expect(compiled.querySelector('.cv-button')).toBeTruthy();
+    expect(compiled.querySelector('.nav')).toBeFalsy();
+    expect(compiled.querySelector('.session-badge')).toBeFalsy();
+
+    const hrefs = Array.from(compiled.querySelectorAll('.topbar a')).map((a) =>
+      a.getAttribute('href'),
+    );
+    expect(hrefs).toContain('https://www.linkedin.com/in/build-with-deepak/');
   });
 
   it('shows nav and a demo-session badge once a token exists', async () => {
@@ -48,12 +62,13 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.topbar')).toBeTruthy();
+    expect(compiled.querySelector('.nav')).toBeTruthy();
     expect(compiled.querySelector('.session-badge')?.textContent).toContain('Demo session');
 
     TestBed.inject(AuthService).logout();
     fixture.detectChanges();
-    expect(compiled.querySelector('.topbar')).toBeFalsy();
+    expect(compiled.querySelector('.topbar')).toBeTruthy();
+    expect(compiled.querySelector('.session-badge')).toBeFalsy();
   });
 
   it('carries the build-with-deepak.com brand footer with socials', async () => {

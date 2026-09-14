@@ -29,6 +29,11 @@
   display: flex;
   flex-direction: column;
   line-height: 1.25;
+  text-decoration: none;
+
+  &:hover .identity-name {
+    color: var(--accent);
+  }
 }
 
 .identity-name {
