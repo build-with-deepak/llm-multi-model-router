@@ -34,8 +34,31 @@ interface DemoLink {
         </a>
 
         <p class="byline">
-          Built by <strong>Deepak Kumar Jha</strong> — Senior Full-Stack Engineer · Technical Lead
+          Built by <strong>Deepak Kumar Jha</strong> — Technical Lead · Senior Full-Stack Engineer
         </p>
+        <p class="stat-line">13 years · Node.js · Angular · React · AWS · GCP</p>
+        <p class="availability-line">
+          Open to full-time Technical Lead roles — Delhi NCR and Dubai/UAE. Available in 15 days.
+        </p>
+
+        <div class="cta-row">
+          <a
+            class="cta-button cta-primary"
+            href="https://build-with-deepak.com/Deepak_Kumar_Jha_Technical_Lead.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Download CV
+          </a>
+          <a class="cta-button" href="mailto:entr.deepakjha@gmail.com">Email</a>
+          <a class="cta-button" href="https://www.linkedin.com/in/build-with-deepak" target="_blank" rel="noopener">
+            LinkedIn
+          </a>
+          <a class="cta-button" href="https://build-with-deepak.com" target="_blank" rel="noopener">
+            Full Profile
+          </a>
+        </div>
+
         <p class="tagline">
           A live demo from the <a href="https://build-with-deepak.com" target="_blank" rel="noopener">build-with-deepak.com</a>
           portfolio — production AI engineering, not prototypes.
@@ -66,17 +89,23 @@ interface DemoLink {
           <a href="https://build-with-deepak.com/contact" target="_blank" rel="noopener">Hire Me</a>
         </nav>
 
-        <div class="suite-row">
-          <span class="suite-label">The demo suite:</span>
+        <p class="suite-label">The demo suite</p>
+        <div class="suite-grid">
           @for (demo of demos; track demo.key) {
             @if (demo.key === current()) {
-              <span class="suite-current">{{ demo.name }} (you're here)</span>
+              <span class="suite-card suite-card-current" aria-current="page">
+                <span class="suite-card-name">{{ demo.name }}</span>
+                <span class="suite-card-tag">you're here</span>
+              </span>
             } @else {
-              <a [href]="demo.url" target="_blank" rel="noopener">{{ demo.name }}</a>
+              <a class="suite-card" [href]="demo.url" target="_blank" rel="noopener">
+                <span class="suite-card-name">{{ demo.name }}</span>
+                <span class="suite-card-tag">visit →</span>
+              </a>
             }
           }
-          <a class="source-link" [href]="currentRepo()" target="_blank" rel="noopener">View source on GitHub</a>
         </div>
+        <a class="source-link" [href]="currentRepo()" target="_blank" rel="noopener">View source on GitHub</a>
       </div>
     </footer>
   `,
@@ -125,6 +154,55 @@ interface DemoLink {
 
       strong {
         font-weight: 700;
+      }
+    }
+
+    .stat-line {
+      margin: 0.35rem 0 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .availability-line {
+      margin: 0.35rem 0 0;
+      font-size: 0.8rem;
+      color: var(--success);
+      font-weight: 600;
+      max-width: 30rem;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.1rem;
+    }
+
+    .cta-button {
+      padding: 0.5rem 1rem;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border);
+      background: var(--surface-raised);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+
+      &:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+    }
+
+    .cta-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+
+      &:hover {
+        opacity: 0.92;
+        color: white;
       }
     }
 
@@ -185,43 +263,83 @@ interface DemoLink {
       }
     }
 
-    .suite-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: baseline;
-      gap: 0.4rem 1rem;
-      margin-top: 0.75rem;
+    .suite-label {
+      width: 100%;
+      margin: 0.75rem 0 0;
       padding-top: 0.9rem;
       border-top: 1px solid var(--border);
-      width: 100%;
-      font-size: 0.75rem;
-
-      a {
-        color: var(--text-muted);
-        text-decoration: none;
-
-        &:hover {
-          color: var(--accent);
-        }
-      }
-    }
-
-    .suite-label {
       color: var(--text-muted);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       font-size: 0.65rem;
+      text-align: center;
     }
 
-    .suite-current {
-      color: var(--accent);
-      font-weight: 600;
+    .suite-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin-top: 0.6rem;
+    }
+
+    .suite-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.7rem 0.5rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--surface-raised);
+      color: var(--text);
+      text-decoration: none;
+      text-align: center;
+
+      &:hover {
+        border-color: var(--accent);
+      }
+    }
+
+    .suite-card-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .suite-card-tag {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .suite-card-current {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+      cursor: default;
+
+      .suite-card-tag {
+        color: var(--accent);
+        font-weight: 700;
+      }
+    }
+
+    @media (max-width: 26rem) {
+      .suite-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .source-link {
+      display: inline-block;
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
       font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--accent);
+      }
     }
   `,
 })

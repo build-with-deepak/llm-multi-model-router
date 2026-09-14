@@ -82,6 +82,88 @@
   margin: 0;
 }
 
+.data-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: -0.5rem 0 0;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.explainer-panel {
+  .explainer-text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+}
+
+.cost-panel {
+  .cost-line {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .cost-sep {
+    color: var(--text-muted);
+    margin: 0 0.15rem;
+  }
+
+  .cost-saved {
+    color: var(--success);
+    font-weight: 600;
+    margin-left: 0.35rem;
+  }
+
+  .cost-empty {
+    margin: 0.35rem 0 0;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+}
+
+.examples-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.examples-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.example-chip {
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 .error-banner {
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
@@ -160,6 +242,13 @@
   color: var(--text-muted);
 }
 
+.routing-headline {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 .sensitive-note {
   margin: 0.9rem 0 0;
   padding: 0.6rem 0.9rem;
@@ -235,4 +324,49 @@
   font-size: 0.72rem;
   color: var(--text-muted);
   margin: 0.2rem 0 0;
+}
+
+.built-panel {
+  .built-summary {
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '▸ ';
+      color: var(--accent);
+    }
+  }
+
+  &[open] .built-summary::before {
+    content: '▾ ';
+  }
+
+  .built-body {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    strong {
+      color: var(--text);
+    }
+
+    code {
+      background: var(--surface-raised);
+      border-radius: 0.3rem;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.82em;
+    }
+  }
 }

@@ -23,8 +23,12 @@
       {{ isLoggingIn() ? 'Starting your session…' : 'Continue with demo account' }}
     </button>
     <p class="demo-note">
-      One click, no signup. Demo sessions last 2 hours; request history from demo
-      sessions is cleaned up automatically after 7 days.
+      @if (isLoggingIn()) {
+        Starting automatically — no signup needed.
+      } @else {
+        No signup. Demo sessions last 2 hours; request history from demo sessions is
+        cleaned up automatically after 7 days.
+      }
     </p>
 
     <div class="divider"><span>or</span></div>

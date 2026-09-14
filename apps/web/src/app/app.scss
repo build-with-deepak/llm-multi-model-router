@@ -10,18 +10,42 @@
 }
 
 .topbar-inner {
-  max-width: 60rem;
+  max-width: 64rem;
   margin: 0 auto;
   padding: 0.75rem 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
 }
 
-.brand {
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.identity-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.identity-name {
   font-weight: 800;
   font-size: 0.9375rem;
-  margin: 0;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--accent);
+  }
+}
+
+.identity-title {
+  font-size: 0.7rem;
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
@@ -46,6 +70,39 @@
       color: var(--accent);
       background: var(--accent-bg);
     }
+  }
+}
+
+.header-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.cv-button {
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.6rem;
+  background: var(--accent);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    opacity: 0.92;
+  }
+}
+
+.profile-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--text);
   }
 }
 

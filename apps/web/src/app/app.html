@@ -2,20 +2,43 @@
   @if (auth.isAuthenticated()) {
     <header class="topbar">
       <div class="topbar-inner">
-        <a
-          class="topbar-logo"
-          href="https://build-with-deepak.com"
-          target="_blank"
-          rel="noopener"
-          aria-label="build-with-deepak.com home"
-        >
-          <img src="/build-with-light.png" alt="build-with-deepak.com" />
-        </a>
-        <p class="brand">Multi-Model Router</p>
+        <div class="identity">
+          <a
+            class="topbar-logo"
+            href="https://build-with-deepak.com"
+            target="_blank"
+            rel="noopener"
+            aria-label="build-with-deepak.com home"
+          >
+            <img src="/build-with-light.png" alt="build-with-deepak.com" />
+          </a>
+          <div class="identity-text">
+            <a class="identity-name" href="https://build-with-deepak.com" target="_blank" rel="noopener">
+              Deepak Kumar Jha
+            </a>
+            <span class="identity-title">Technical Lead · Senior Node.js Engineer</span>
+          </div>
+        </div>
+
         <nav class="nav">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Playground</a>
           <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
         </nav>
+
+        <div class="header-cta">
+          <a
+            class="cv-button"
+            href="https://build-with-deepak.com/Deepak_Kumar_Jha_Technical_Lead.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Download CV
+          </a>
+          <a class="profile-link" href="https://build-with-deepak.com" target="_blank" rel="noopener">
+            Full Profile →
+          </a>
+        </div>
+
         <div class="session">
           <span class="session-badge">Demo session</span>
           <button class="logout" type="button" (click)="logout()">Sign out</button>
