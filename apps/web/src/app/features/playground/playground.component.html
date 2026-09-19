@@ -44,67 +44,96 @@
         }
       </div>
 
-      <form class="prompt-form" (submit)="$event.preventDefault(); run()">
-        <textarea
-          class="prompt-input"
-          rows="4"
-          maxlength="2000"
-          placeholder="Enter a prompt — the router will decide where it runs and show you why…"
-          [(ngModel)]="prompt"
-          name="prompt"
-          [disabled]="isRunning()"
-        ></textarea>
+      @if (!auth.isAuthenticated()) {
+        <app-auth-panel demo="router" />
+      } @else {
+        <form class="prompt-form" (submit)="$event.preventDefault(); run()">
+          <textarea
+            class="prompt-input"
+            rows="4"
+            maxlength="2000"
+            placeholder="Enter a prompt — the router will decide where it runs and show you why…"
+            [(ngModel)]="prompt"
+            name="prompt"
+            [disabled]="isRunning()"
+          ></textarea>
 
-        <div class="examples-row">
-          <span class="examples-label">Try:</span>
-          @for (example of examples; track example.label) {
-            <button
-              class="example-chip"
-              type="button"
-              [title]="example.hint"
-              [disabled]="isRunning()"
-              (click)="runExample(example)"
-            >
-              {{ example.label }}
+          <div class="examples-row">
+            <span class="examples-label">Try:</span>
+            @for (example of examples; track example.label) {
+              <button
+                class="example-chip"
+                type="button"
+                [title]="example.hint"
+                [disabled]="isRunning()"
+                (click)="runExample(example)"
+              >
+                {{ example.label }}
+              </button>
+            }
+          </div>
+
+          <div class="controls-row">
+            <label class="budget-label">
+              Latency budget
+              <select class="budget-select" [(ngModel)]="latencyBudget" name="latencyBudget" [disabled]="isRunning()">
+                <option value="fast">Fast — first token matters most</option>
+                <option value="balanced">Balanced</option>
+                <option value="quality">Quality — take the time needed</option>
+              </select>
+            </label>
+            <button class="run-button" type="submit" [disabled]="isRunning() || !prompt().trim()">
+              {{ isRunning() ? 'Routing…' : 'Route it' }}
             </button>
-          }
-        </div>
+          </div>
+        </form>
 
-        <div class="controls-row">
-          <label class="budget-label">
-            Latency budget
-            <select class="budget-select" [(ngModel)]="latencyBudget" name="latencyBudget" [disabled]="isRunning()">
-              <option value="fast">Fast — first token matters most</option>
-              <option value="balanced">Balanced</option>
-              <option value="quality">Quality — take the time needed</option>
-            </select>
-          </label>
-          <button class="run-button" type="submit" [disabled]="isRunning() || !prompt().trim()">
-            {{ isRunning() ? 'Routing…' : 'Route it' }}
-          </button>
-        </div>
-      </form>
-
-      <p class="hint">
-        Tip: include an email address or the word “confidential” to watch the sensitivity
-        classifier force local inference.
-      </p>
-      <p class="data-note">
-        What happens to what you type: your prompt is sent only to the model the router
-        chooses (local Ollama, or a cloud provider if one is configured on this
-        deployment) to generate the answer below. It is never stored — the database
-        keeps routing metadata (model, cost, timing) for the dashboard, not prompt text.
-      </p>
+        <p class="hint">
+          Tip: include an email address or the word “confidential” to watch the sensitivity
+          classifier force local inference.
+        </p>
+        <p class="data-note">
+          What happens to what you type: your prompt is sent only to the model the router
+          chooses (local Ollama, or a cloud provider if one is configured on this
+          deployment) to generate the answer below. It is never stored — the database
+          keeps routing metadata (model, cost, timing) for the dashboard, not prompt text.
+        </p>
+      }
 
       @if (error()) {
         <p class="error-banner">{{ error() }}</p>
       }
 
-      @if (isRunning() && !decision()) {
-        <p class="status-line" aria-live="polite">
-          <span class="status-dots" aria-hidden="true"><span></span><span></span><span></span></span>
-          Classifying the prompt and scoring candidates…
-        </p>
+      @if (isRunning()) {
+        <ol class="progress-steps" aria-live="polite">
+          <li class="progress-step" [class.step-done]="!!decision()" [class.step-active]="!decision()">
+            <span class="step-marker" aria-hidden="true">
+              @if (decision()) {
+                ✓
+              } @else {
+                <span class="status-dots"><span></span><span></span><span></span></span>
+              }
+            </span>
+            <span class="step-text">
+              Classifying the prompt and scoring candidates
+              @if (decision(); as d) {
+                <span class="step-meta">— selected {{ d.chosen.displayName }}</span>
+              }
+            </span>
+          </li>
+          @if (decision(); as d) {
+            <li class="progress-step" [class.step-done]="!!answer()" [class.step-active]="!answer()">
+              <span class="step-marker" aria-hidden="true">
+                @if (answer()) {
+                  ✓
+                } @else {
+                  <span class="status-dots"><span></span><span></span><span></span></span>
+                }
+              </span>
+              <span class="step-text">Generating on {{ d.chosen.displayName }}</span>
+            </li>
+          }
+        </ol>
       }
 
       @if (decision(); as d) {
@@ -156,13 +185,6 @@
         </p>
       }
 
-      @if (isRunning() && decision()) {
-        <p class="status-line generating-note" aria-live="polite">
-          <span class="status-dots" aria-hidden="true"><span></span><span></span><span></span></span>
-          Generating on {{ decision()!.chosen.displayName }}…
-        </p>
-      }
-
       @if (answer()) {
         <div class="panel">
           <p class="panel-title">Answer</p>
@@ -204,42 +226,18 @@
         </div>
       }
 
-      <details class="panel built-panel">
-        <summary class="panel-title built-summary">How this is built</summary>
-        <div class="built-body">
-          <p>
-            <strong>Stack.</strong> Angular 21 (standalone components, signals, no
-            NgRx) talking to a NestJS API over SSE-over-POST via <code>fetch</code>
-            (EventSource can't send an Authorization header). Postgres holds one
-            append-only request log the dashboard aggregates with SQL
-            (<code>percentile_cont</code> for p50/p95) rather than in JS. Local
-            inference runs on Ollama; OpenAI, Anthropic and Gemini are wired in as
-            optional cloud providers, each marked unavailable — not faked — when
-            its API key isn't configured on this deployment.
-          </p>
-          <p>
-            <strong>The key architectural decision.</strong> Routing is a pure
-            function — <code>(prompt, latency budget, provider availability) →
-            decision</code> — with no I/O, so every rule in the policy (sensitive
-            data forces local; complexity sets a capability floor; cheapest
-            adequate model wins, not the best available) is asserted by a unit
-            test rather than only exercised at runtime. Sensitivity detection is
-            regex/keyword, not an LLM call classifying the prompt — asking a model
-            to decide whether to spend a model call is circular, and for privacy
-            it means sending the sensitive text to exactly the place the check
-            exists to protect it from.
-          </p>
-          <p>
-            <strong>Honest trade-off.</strong> The regex classifier is fast and
-            auditable but has lower recall than an LLM-based one would — a
-            heuristic can miss PII an actual model might catch. The design leans
-            on the safe side of that asymmetry deliberately: a missed detection
-            sends one prompt to a cloud provider, whereas a false positive only
-            costs some latency by staying local — so sensitivity only ever forces
-            traffic local, never the other way.
+      <div class="panel build-cta">
+        <div>
+          <p class="build-cta-title">Curious how this is built?</p>
+          <p class="build-cta-copy">
+            Stack, key decisions and trade-offs are written up in full on the detailed
+            architecture page — not squeezed into an accordion here.
           </p>
         </div>
-      </details>
+        <a class="bwd-btn bwd-btn--primary" href="https://build-with-deepak.com/router#architecture" target="_blank" rel="noopener">
+          See the full architecture →
+        </a>
+      </div>
     </main>
 
     <aside class="guide">

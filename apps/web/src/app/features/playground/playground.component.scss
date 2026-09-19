@@ -63,15 +63,43 @@ h1 {
   min-width: 0;
 }
 
-/* ---- "what's happening right now" status line — same pattern as the RAG
-   and MCP demos. ---- */
-.status-line {
+/* ---- the real stages of a request, each its own line that stays visible
+   once done instead of being replaced by the next one — same pattern as
+   the RAG demo's progress-steps. ---- */
+.progress-steps {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  flex-direction: column;
+  gap: 0.5rem;
   margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.progress-step {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
   font-size: 0.85rem;
   font-weight: 600;
+  color: var(--text-muted);
+}
+
+.progress-step.step-done {
+  color: var(--text);
+}
+
+.step-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  flex-shrink: 0;
+  color: var(--success);
+  font-weight: 700;
+}
+
+.step-meta {
+  font-weight: 500;
   color: var(--text-muted);
 }
 
@@ -379,12 +407,6 @@ h1 {
   margin: 0;
 }
 
-.generating-note {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  margin: 0;
-}
-
 .panel {
   border: 1px solid var(--border);
   border-radius: 1rem;
@@ -523,47 +545,27 @@ h1 {
   margin: 0.2rem 0 0;
 }
 
-.built-panel {
-  .built-summary {
-    cursor: pointer;
-    list-style: none;
+/* Points to the detailed architecture writeup on build-with-deepak.com
+   rather than duplicating it in an accordion here. */
+.build-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
 
-    &::-webkit-details-marker {
-      display: none;
-    }
+.build-cta-title {
+  margin: 0 0 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
 
-    &::before {
-      content: '▸ ';
-      color: var(--accent);
-    }
-  }
-
-  &[open] .built-summary::before {
-    content: '▾ ';
-  }
-
-  .built-body {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-
-    p {
-      margin: 0;
-      font-size: 0.85rem;
-      line-height: 1.65;
-      color: var(--text-muted);
-    }
-
-    strong {
-      color: var(--text);
-    }
-
-    code {
-      background: var(--surface-raised);
-      border-radius: 0.3rem;
-      padding: 0.1rem 0.35rem;
-      font-size: 0.82em;
-    }
-  }
+.build-cta-copy {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 32rem;
 }

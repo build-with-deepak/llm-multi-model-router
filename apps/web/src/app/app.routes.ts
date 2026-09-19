@@ -10,7 +10,6 @@ export const routes: Routes = [
   },
   {
     path: '',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/playground/playground.component').then(
         (m) => m.PlaygroundComponent,

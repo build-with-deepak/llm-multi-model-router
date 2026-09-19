@@ -198,7 +198,7 @@ pnpm --filter web build && pnpm --filter web test
    (compose refuses to start without them). Leave cloud keys empty unless
    you've set spend caps on the provider dashboards.
 2. `docker compose up -d --build` — postgres + api + web; only web binds a
-   host port, on `127.0.0.1:8091`.
+   host port, on `127.0.0.1:8093`.
 3. Install `nginx/router.build-with-deepak.com.conf` into the host nginx
    and run `certbot --nginx -d router.build-with-deepak.com`.
 4. `GET /api/health` is the unauthenticated liveness probe for uptime

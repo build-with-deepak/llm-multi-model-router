@@ -1,5 +1,6 @@
 import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AuthPanelComponent } from '../../core/auth-panel.component';
 import { AuthService } from '../../core/auth.service';
 import { SessionCostService } from '../../core/session-cost.service';
 import { streamSse } from '../../core/sse-client';
@@ -32,21 +33,21 @@ interface ExamplePrompt {
  */
 const EXAMPLE_PROMPTS: ExamplePrompt[] = [
   {
-    label: 'Contains personal data',
-    hint: 'Should force local inference — the data never leaves the server.',
+    label: 'Private data',
+    hint: 'Contains PII — should force local inference, the data never leaves the server.',
     prompt:
       'My email is jane.doe@example.com — can you draft a short, polite follow-up message to a client?',
     latencyBudget: 'balanced',
   },
   {
-    label: 'Simple question, fast budget',
-    hint: 'Should route to the cheapest model that is fast enough, not the most capable one.',
+    label: 'Quick answer',
+    hint: 'Simple question, fast budget — should route to the cheapest model that is fast enough, not the most capable one.',
     prompt: "What's the capital of France, and what's a good day trip from there?",
     latencyBudget: 'fast',
   },
   {
-    label: 'Complex reasoning',
-    hint: 'Should require the highest-capability configured model.',
+    label: 'Deep reasoning',
+    hint: 'Hard multi-step problem — should require the highest-capability configured model.',
     prompt:
       'Architect a fault-tolerant order-processing pipeline for 50k requests/sec. ' +
       'Walk through the trade-offs step-by-step, sketch the retry logic as ```code```, ' +
@@ -58,7 +59,7 @@ const EXAMPLE_PROMPTS: ExamplePrompt[] = [
 
 @Component({
   selector: 'app-playground',
-  imports: [FormsModule],
+  imports: [FormsModule, AuthPanelComponent],
   templateUrl: './playground.component.html',
   styleUrl: './playground.component.scss',
 })
