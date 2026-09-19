@@ -19,13 +19,25 @@ money it saved, on screen, per request and cumulatively.
 
 ## Try it
 
-The demo is account-gated but frictionless: **Continue with demo account**
-issues a real 2-hour session against the real API — same routing engine,
-same database, same dashboard a registered user would see. Registration
-(persistent accounts whose data survives demo cleanup) is in progress; the
-Register button says so honestly, and so does `POST /api/auth/register`
-(501). Demo request history is cleaned up automatically after 7 days; the
-seeded history that keeps the dashboard meaningful is kept.
+Two ways in, and one account for all three demos in this suite.
+
+**Try it now — demo account** signs you in with one click against the real
+API: same routing engine, same providers, same dashboard. It is a shared
+account and its token carries `demo:read` only, so it can run everything
+here and cannot make the server store anything. That is what lets the front
+door stay open to anyone without putting a single VPS at the mercy of
+whoever finds it.
+
+**Create a free account** — first name, last name, email, optional phone,
+then a six-digit code. No password to invent. A verified account carries
+`demo:read demo:write` and keeps your request history beyond the demo
+cleanup window, and the same account signs you into the other two demos.
+
+Authentication is handled by a separate service,
+[id.build-with-deepak.com](https://id.build-with-deepak.com). This API does
+not mint tokens — it verifies them against that service's published JWKS, so
+it holds no signing secret and *cannot* issue itself a session. Every
+endpoint except `/health` requires one.
 
 ## Architecture
 
@@ -182,7 +194,7 @@ pnpm --filter web build && pnpm --filter web test
 
 ## Deploying to the VPS
 
-1. `cp .env.example .env` — set `POSTGRES_PASSWORD` and `JWT_SECRET`
+1. `cp .env.example .env` — set `POSTGRES_PASSWORD`
    (compose refuses to start without them). Leave cloud keys empty unless
    you've set spend caps on the provider dashboards.
 2. `docker compose up -d --build` — postgres + api + web; only web binds a
@@ -196,8 +208,9 @@ pnpm --filter web build && pnpm --filter web test
 
 - [x] Full routing engine: sensitivity/complexity classification, pure
       decision function, cost accounting, fallback chain, SSE streaming
-- [x] Demo-account auth end to end (2h JWT sessions, register = honest
-      501 coming-soon), all API surfaces guarded
+- [x] Identity service integration — one account across all three demos,
+      email-OTP registration, shared read-only demo account, `demo:write`
+      scope enforced on every endpoint that stores anything
 - [x] Postgres request log + SQL-aggregated dashboard + boot-time seed +
       hourly cleanup cron + manual reset/cleanup scripts
 - [x] Builds, lints, passes all tests (API: 17 unit + 6 e2e; web: 6 unit
@@ -206,4 +219,3 @@ pnpm --filter web build && pnpm --filter web test
       neither; verify the full pipeline before pointing recruiters at it
 - [ ] Not yet deployed; cloud provider keys not yet configured (runs
       local-only until then)
-- [ ] Registration/persistent accounts — in progress (demo-first by design)

@@ -1,0 +1,746 @@
+/* =======================================================================
+   build-with-deepak.com design system — shared copy
+   =======================================================================
+
+   This file is byte-identical to the `bwd-*` block in
+   build-with-deepak.com's src/styles.css, and is the reason the four apps
+   in this suite finally look like one product.
+
+   The previous attempt at shared chrome was a hand-copied header per repo.
+   It drifted immediately: one app ended up with a header component, two
+   inlined their own, and there were two different footers. The fix is not
+   discipline — it is making the shared thing a single artefact that is
+   copied whole rather than re-typed.
+
+   DO NOT hand-edit this file. Change it in build-with-deepak.com and copy
+   it back out to all three demos.
+   ======================================================================= */
+
+/* ============================================================
+   PRODUCT-STUDIO DESIGN SYSTEM  (bwd-*)
+   ============================================================
+
+   One token set and one component vocabulary shared by
+   build-with-deepak.com and the three demo apps (rag./agent./
+   router.), so the suite reads as one product rather than four
+   sites that happen to share a logo.
+
+   Everything here is prefixed `bwd-` and defined in plain CSS
+   rather than Tailwind utilities for exactly that reason: the
+   demo apps are separate Angular workspaces with no Tailwind
+   build, and this block is copied into their global stylesheet
+   verbatim. A utility-class design system could not cross that
+   boundary; a token + component-class one can.
+
+   Personality target: technical + premium + calm + credible.
+   Deliberately NOT: neon gradients, robot illustrations, or a
+   dark "AI startup" palette.
+   ============================================================ */
+
+:root {
+  /* Surfaces — light-first. --bwd-surface is the page; --bwd-raised
+     is any card sitting on it; --bwd-sunken is a recessed band used
+     to separate sections without drawing a border. */
+  --bwd-surface: #ffffff;
+  --bwd-raised: #ffffff;
+  --bwd-sunken: #f8fafc;
+  --bwd-border: #e6ebf2;
+  --bwd-border-strong: #cbd5e1;
+
+  /* Ink. Navy rather than black: at these weights pure #000 reads
+     harsh against white and cheapens the page. */
+  --bwd-ink: #0b1220;
+  --bwd-ink-soft: #1e293b;
+  --bwd-body: #475569;
+  --bwd-muted: #64748b;
+  --bwd-faint: #7c8ba0;
+
+  /* Accent — one blue, used sparingly. The indigo exists only as the
+     second stop of the primary-button gradient and in diagrams. */
+  --bwd-accent: #2563eb;
+  --bwd-accent-strong: #1d4ed8;
+  --bwd-accent-deep: #4f46e5;
+  --bwd-accent-bg: #eff6ff;
+  --bwd-accent-border: #bfdbfe;
+
+  /* Live / available. Green is reserved for exactly one meaning on
+     this site: "this is running right now" or "I am available".
+     Using it for anything else devalues both signals. */
+  --bwd-live: #16a34a;
+  --bwd-live-bg: #f0fdf4;
+  --bwd-live-border: #bbf7d0;
+
+  --bwd-radius-sm: 0.625rem;
+  --bwd-radius: 0.875rem;
+  --bwd-radius-lg: 1.25rem;
+  --bwd-radius-xl: 1.75rem;
+
+  /* Two shadows only. A card is either resting or lifted. */
+  --bwd-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.05);
+  --bwd-shadow-lift: 0 2px 4px rgba(15, 23, 42, 0.05), 0 18px 44px rgba(37, 99, 235, 0.12);
+
+  --bwd-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+/* Dark mode is a courtesy here, not the primary experience: the design
+   direction is explicitly light-first, and the mockups, the OG cards and
+   every screenshot assume white. These overrides exist so a visitor who
+   has already toggled the site dark is not blinded, not as a second
+   design. */
+[data-theme="dark"] {
+  --bwd-surface: #0b1220;
+  --bwd-raised: #131c2e;
+  --bwd-sunken: #0f172a;
+  --bwd-border: #263449;
+  --bwd-border-strong: #33415a;
+  --bwd-ink: #f1f5f9;
+  --bwd-ink-soft: #e2e8f0;
+  --bwd-body: #b6c2d4;
+  --bwd-muted: #94a3b8;
+  --bwd-faint: #64748b;
+  --bwd-accent: #60a5fa;
+  --bwd-accent-strong: #93c5fd;
+  --bwd-accent-deep: #a5b4fc;
+  --bwd-accent-bg: rgba(37, 99, 235, 0.14);
+  --bwd-accent-border: rgba(96, 165, 250, 0.3);
+  --bwd-live: #4ade80;
+  --bwd-live-bg: rgba(22, 163, 74, 0.14);
+  --bwd-live-border: rgba(74, 222, 128, 0.28);
+  --bwd-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  --bwd-shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.35), 0 18px 44px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------------- Layout primitives ---------------- */
+
+.bwd-shell {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (max-width: 40rem) {
+  .bwd-shell {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.bwd-section {
+  padding-top: 5.5rem;
+  padding-bottom: 5.5rem;
+}
+
+.bwd-section--tight {
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+}
+
+.bwd-section--sunken {
+  background: var(--bwd-sunken);
+}
+
+@media (max-width: 48rem) {
+  .bwd-section {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+  }
+}
+
+/* Section heading row: title on the left, an optional quiet aside on the
+   right. The aside carries the "why should I believe you" line that would
+   otherwise become another paragraph of body copy. */
+.bwd-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.25rem;
+}
+
+.bwd-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: clamp(1.5rem, 1.15rem + 1.3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--bwd-ink);
+}
+
+/* The short accent rule that opens every section title in the mockups. */
+.bwd-section-title::before {
+  content: "";
+  width: 1.5rem;
+  height: 0.1875rem;
+  border-radius: 999px;
+  background: var(--bwd-accent);
+  flex-shrink: 0;
+}
+
+.bwd-section-aside {
+  font-size: 0.875rem;
+  color: var(--bwd-muted);
+  margin: 0;
+  max-width: 34rem;
+}
+
+/* ---------------- Type ---------------- */
+
+.bwd-display {
+  margin: 0;
+  font-size: clamp(2.25rem, 1.4rem + 3.4vw, 3.75rem);
+  line-height: 1.06;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--bwd-ink);
+  text-wrap: balance;
+}
+
+.bwd-display em {
+  font-style: normal;
+  color: var(--bwd-accent);
+}
+
+.bwd-lede {
+  margin: 1.25rem 0 0;
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  line-height: 1.65;
+  color: var(--bwd-body);
+  max-width: 36rem;
+  text-wrap: pretty;
+}
+
+.bwd-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--bwd-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bwd-accent);
+  background: var(--bwd-accent-bg);
+  border: 1px solid var(--bwd-accent-border);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+}
+
+.bwd-eyebrow--plain {
+  background: none;
+  border: none;
+  padding: 0;
+  /* muted, not faint — this is a read label (e.g. "Live systems"), and
+     faint's contrast ratio against a white surface (~3:1) is too low for
+     text people are meant to read rather than glance past. */
+  color: var(--bwd-muted);
+}
+
+/* ---------------- Live / available indicators ---------------- */
+
+.bwd-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--bwd-live);
+  background: var(--bwd-live-bg);
+  border: 1px solid var(--bwd-live-border);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  white-space: nowrap;
+}
+
+.bwd-dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  animation: bwd-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes bwd-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45); }
+  55%      { box-shadow: 0 0 0 5px rgba(22, 163, 74, 0); }
+}
+
+/* Anything that animates on a loop is a distraction to someone who has
+   asked the OS to stop that. */
+@media (prefers-reduced-motion: reduce) {
+  .bwd-dot { animation: none; }
+  .bwd-card, .bwd-btn, .bwd-path-card { transition: none !important; }
+}
+
+/* ---------------- Buttons ---------------- */
+
+.bwd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: var(--bwd-radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease,
+    border-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.bwd-btn:active {
+  transform: translateY(1px);
+}
+
+.bwd-btn--primary {
+  background: linear-gradient(135deg, var(--bwd-accent) 0%, var(--bwd-accent-deep) 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.26);
+}
+
+.bwd-btn--primary:hover {
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.34);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .bwd-btn--primary {
+  color: #0b1220;
+}
+
+.bwd-btn--ghost {
+  background: var(--bwd-raised);
+  color: var(--bwd-ink);
+  border-color: var(--bwd-border-strong);
+}
+
+.bwd-btn--ghost:hover {
+  border-color: var(--bwd-accent);
+  color: var(--bwd-accent);
+  background: var(--bwd-accent-bg);
+}
+
+.bwd-btn--quiet {
+  background: none;
+  color: var(--bwd-muted);
+  padding: 0.5rem 0.25rem;
+  font-weight: 600;
+}
+
+.bwd-btn--quiet:hover {
+  color: var(--bwd-accent);
+}
+
+.bwd-btn--block {
+  width: 100%;
+}
+
+.bwd-btn[disabled],
+.bwd-btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.bwd-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+/* ---------------- Cards ---------------- */
+
+.bwd-card {
+  background: var(--bwd-raised);
+  border: 1px solid var(--bwd-border);
+  border-radius: var(--bwd-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--bwd-shadow);
+  transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.18s ease;
+}
+
+.bwd-card--interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--bwd-shadow-lift);
+  border-color: var(--bwd-accent-border);
+}
+
+.bwd-card--flat {
+  box-shadow: none;
+}
+
+.bwd-card-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--bwd-ink);
+}
+
+.bwd-card-body {
+  margin: 0.6rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--bwd-body);
+}
+
+/* Square tinted glyph plate that opens most cards. The tint is passed in
+   per card via --plate so one class covers every accent. */
+.bwd-plate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--bwd-radius-sm);
+  background: var(--plate, var(--bwd-accent-bg));
+  color: var(--plate-ink, var(--bwd-accent));
+  flex-shrink: 0;
+}
+
+.bwd-plate svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+/* ---------------- Grids ---------------- */
+
+.bwd-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.bwd-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.bwd-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bwd-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.bwd-grid--6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+@media (max-width: 64rem) {
+  .bwd-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bwd-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bwd-grid--6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 40rem) {
+  .bwd-grid--2,
+  .bwd-grid--3,
+  .bwd-grid--4 { grid-template-columns: minmax(0, 1fr); }
+  .bwd-grid--6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------------- Feature rows inside cards ----------------
+   The two-up "Document Processing / Vector Search" rows on the demo
+   cards. A grid rather than a flex wrap so the second column lines up
+   across all three cards regardless of label length — misaligned
+   feature rows are the single loudest "this was assembled quickly"
+   signal on a page like this. */
+
+.bwd-features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bwd-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--bwd-ink-soft);
+  min-width: 0;
+}
+
+.bwd-features svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--bwd-muted);
+  flex-shrink: 0;
+}
+
+@media (max-width: 30rem) {
+  .bwd-features { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------------- Checklist ---------------- */
+
+.bwd-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.bwd-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--bwd-body);
+}
+
+.bwd-check {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  color: var(--bwd-live);
+}
+
+/* ---------------- Pills / chips ---------------- */
+
+.bwd-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bwd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--bwd-border);
+  background: var(--bwd-sunken);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--bwd-ink-soft);
+  white-space: nowrap;
+}
+
+/* ---------------- Flow / pipeline diagram ----------------
+   Used for "Documents → Processing → Retrieval → Context → Answer"
+   and the lifecycle row. Laid out as a flex row that wraps rather
+   than a fixed grid: the arrow is a real element that hides on wrap
+   so the diagram degrades to a legible stacked list on a phone
+   instead of overflowing sideways. */
+
+.bwd-flow {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bwd-flow-step {
+  flex: 1 1 8.5rem;
+  min-width: 8.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 1.1rem 0.75rem;
+  border-radius: var(--bwd-radius);
+  border: 1px solid var(--bwd-border);
+  background: var(--bwd-raised);
+}
+
+.bwd-flow-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--bwd-accent-bg);
+  color: var(--bwd-accent);
+  font-size: 0.8125rem;
+  font-weight: 800;
+}
+
+.bwd-flow-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--bwd-ink);
+}
+
+.bwd-flow-note {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--bwd-muted);
+}
+
+.bwd-flow-arrow {
+  align-self: center;
+  color: var(--bwd-faint);
+  flex-shrink: 0;
+}
+
+@media (max-width: 48rem) {
+  .bwd-flow-arrow { display: none; }
+  .bwd-flow-step { flex-basis: 100%; }
+}
+
+/* ---------------- Architecture diagram ----------------
+   Column-per-tier, each column a stack of labelled boxes. Same
+   wrap-and-hide-the-arrow approach as .bwd-flow. */
+
+.bwd-arch {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-radius: var(--bwd-radius-lg);
+  border: 1px solid var(--bwd-border);
+  background: var(--bwd-sunken);
+}
+
+.bwd-arch-tier {
+  flex: 1 1 9.5rem;
+  min-width: 9.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.bwd-arch-tier-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--bwd-muted);
+  text-align: center;
+  margin-bottom: 0.15rem;
+}
+
+.bwd-arch-node {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--bwd-radius-sm);
+  border: 1px solid var(--bwd-border);
+  background: var(--bwd-raised);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--bwd-ink-soft);
+  line-height: 1.35;
+}
+
+.bwd-arch-node svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--bwd-accent);
+  flex-shrink: 0;
+}
+
+.bwd-arch-arrow {
+  align-self: center;
+  color: var(--bwd-faint);
+  flex-shrink: 0;
+}
+
+@media (max-width: 56rem) {
+  .bwd-arch-arrow { display: none; }
+  .bwd-arch-tier { flex-basis: calc(50% - 0.375rem); }
+}
+
+@media (max-width: 34rem) {
+  .bwd-arch { padding: 1rem; }
+  .bwd-arch-tier { flex-basis: 100%; }
+}
+
+/* ---------------- Audience path cards ---------------- */
+
+.bwd-path-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.375rem;
+  border-radius: var(--bwd-radius-lg);
+  border: 1px solid var(--bwd-border);
+  background: var(--bwd-raised);
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.18s ease;
+}
+
+.bwd-path-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--bwd-accent-border);
+  box-shadow: var(--bwd-shadow-lift);
+}
+
+.bwd-path-role {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--bwd-ink);
+}
+
+.bwd-path-copy {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--bwd-body);
+  margin: 0;
+  flex: 1;
+}
+
+.bwd-path-cta {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--bwd-accent);
+}
+
+/* ---------------- Closing conversion block ---------------- */
+
+.bwd-convert {
+  border-radius: var(--bwd-radius-xl);
+  border: 1px solid var(--bwd-accent-border);
+  background: linear-gradient(140deg, #eef2ff 0%, #eff6ff 55%, #ffffff 100%);
+  padding: 2.75rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
+}
+
+[data-theme="dark"] .bwd-convert {
+  background: linear-gradient(140deg, #1a2440 0%, #131c2e 55%, #0f172a 100%);
+}
+
+@media (max-width: 56rem) {
+  .bwd-convert {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1.75rem;
+    gap: 1.75rem;
+  }
+}
+
+/* ---------------- Mono / code label ---------------- */
+
+.bwd-mono {
+  font-family: var(--bwd-mono);
+  font-size: 0.78rem;
+  color: var(--bwd-muted);
+}
+
+/* ---------------- Visually hidden (a11y) ---------------- */
+
+.bwd-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

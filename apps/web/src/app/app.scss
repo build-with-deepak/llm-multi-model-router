@@ -168,3 +168,39 @@
     border-color: var(--accent);
   }
 }
+
+/* Sub-nav for this app's own two screens (see app.html). Styled from the
+   shared tokens so it reads as part of the same chrome as the header
+   above it rather than as a second, competing bar. */
+.app-nav {
+  border-bottom: 1px solid var(--bwd-border);
+  background: var(--bwd-sunken);
+}
+
+.app-nav-inner {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.app-nav a {
+  padding: 0.7rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--bwd-muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.app-nav a:hover { color: var(--bwd-ink); }
+
+.app-nav a.active {
+  color: var(--bwd-accent);
+  border-bottom-color: var(--bwd-accent);
+}
+
+@media (max-width: 40rem) {
+  .app-nav-inner { padding: 0 1rem; }
+}

@@ -1,15 +1,31 @@
+@use './bwd-design-system.css';
+
+/*
+ * Legacy variable names, remapped onto the shared design system.
+ *
+ * Every feature component in this app already themes itself through
+ * --bg / --surface / --text / --accent and friends, from when these demos
+ * were dark-only and standalone. Rather than rewrite each component's
+ * styles to use the bwd-* tokens directly — dozens of files, every one a
+ * chance to miss a rule and leave a dark patch — the old names are kept as
+ * aliases pointing at the new tokens.
+ *
+ * The whole app changes palette from this block alone, and it stays in step
+ * with build-with-deepak.com and the other two demos automatically, because
+ * the tokens it points at are a verbatim copy of theirs.
+ */
 :root {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface-raised: #273449;
-  --border: #334155;
-  --text: #f1f5f9;
-  --text-muted: #94a3b8;
-  --accent: #8b5cf6;
-  --accent-bg: rgba(139, 92, 246, 0.12);
-  --danger: #f87171;
-  --success: #34d399;
-  --warning: #fbbf24;
+  --bg: var(--bwd-surface);
+  --surface: var(--bwd-raised);
+  --surface-raised: var(--bwd-sunken);
+  --border: var(--bwd-border);
+  --text: var(--bwd-ink);
+  --text-muted: var(--bwd-muted);
+  --accent: var(--bwd-accent);
+  --accent-bg: var(--bwd-accent-bg);
+  --danger: #dc2626;
+  --success: var(--bwd-live);
+  --warning: #d97706;
 }
 
 * {

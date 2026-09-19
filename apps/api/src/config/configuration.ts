@@ -3,14 +3,13 @@
  * sibling rag-privacy-first demo, so anyone reading one repo can navigate
  * the other.
  */
+import { identityConfig, type IdentityConfig } from '../auth/identity.config';
+
 export interface AppConfig {
   port: number;
   corsOrigin: string;
-  auth: {
-    jwtSecret: string;
-    /** Demo sessions are short-lived by design — cleanup assumes it. */
-    tokenTtl: string;
-  };
+  /** Verified against id.build-with-deepak.com — see auth/identity.config.ts. */
+  identity: IdentityConfig;
   db: {
     url: string;
   };
@@ -34,24 +33,13 @@ export interface AppConfig {
   };
 }
 
-const DEV_ONLY_SECRET = 'dev-only-secret-change-me';
 
 export default (): { app: AppConfig } => {
-  const jwtSecret = process.env.JWT_SECRET ?? DEV_ONLY_SECRET;
-  if (process.env.NODE_ENV === 'production' && jwtSecret === DEV_ONLY_SECRET) {
-    // Refusing to boot beats silently signing production sessions with a
-    // secret that is committed to a public repository.
-    throw new Error('JWT_SECRET must be set in production.');
-  }
-
   return {
     app: {
       port: Number(process.env.PORT ?? 3000),
       corsOrigin: process.env.CORS_ORIGIN ?? 'http://localhost:4200',
-      auth: {
-        jwtSecret,
-        tokenTtl: process.env.DEMO_TOKEN_TTL ?? '2h',
-      },
+      identity: identityConfig('router.build-with-deepak.com'),
       db: {
         url:
           process.env.DATABASE_URL ??

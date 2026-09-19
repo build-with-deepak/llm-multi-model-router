@@ -1,69 +1,180 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { DemoSession } from './models';
-
-const STORAGE_KEY = 'router_demo_token';
+import { IDENTITY_BASE_URL } from './identity.config';
+import type { CodeSent, RegisterRequest, Session } from './session.models';
 
 /**
- * Demo-session auth state.
+ * Session state, backed by id.build-with-deepak.com.
  *
- * The token lives in localStorage so a page refresh doesn't end the
- * session, and in a signal so components react to login/logout without a
- * store library. Expiry is handled reactively rather than proactively: the
- * API answers 401 when the token ages out, the interceptor calls
- * `handleUnauthorized()`, and the user lands back on the login screen with
- * one click to a fresh session. A demo session dying after its 2 hours is
- * expected lifecycle, not an error to engineer around.
+ * This app used to mint its own anonymous `demo-<uuid>` session against its
+ * own API. It now holds a session issued by a service it shares with the
+ * other two demos, so one account works across all three.
+ *
+ * Two capabilities matter to the UI and both come from the token rather
+ * than from anything this app decides:
+ *
+ *   isDemo()   — the shared, read-only account
+ *   canUpload() — the `demo:write` scope, i.e. a verified account
+ *
+ * `canUpload` drives what the interface offers. The server enforces the
+ * same rule independently (see the API's ScopesGuard) — this is for showing
+ * the right thing, never for security.
  */
+const STORAGE_KEY = 'bwd_router_session';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly base = IDENTITY_BASE_URL;
 
-  private readonly tokenSignal = signal<string | null>(
-    localStorage.getItem(STORAGE_KEY),
+  private readonly sessionSignal = signal<Session | null>(restore());
+
+  /**
+   * The in-flight refresh, shared by every caller.
+   *
+   * Refresh tokens rotate on use and the identity service treats a replay
+   * as a leak — it revokes the whole chain. So two requests 401-ing at the
+   * same moment and each refreshing independently would not merely race:
+   * the second would look exactly like a stolen token and sign the visitor
+   * out of everything. Collapsing them into one promise is what makes
+   * rotation safe to combine with parallel requests.
+   */
+  private refreshInFlight: Promise<boolean> | null = null;
+
+  readonly isAuthenticated = computed(() => this.sessionSignal() !== null);
+  readonly user = computed(() => this.sessionSignal()?.user ?? null);
+  readonly isDemo = computed(() => this.sessionSignal()?.user.kind === 'demo');
+  readonly canUpload = computed(
+    () => this.sessionSignal()?.user.scope.includes('demo:write') ?? false,
   );
 
-  readonly isAuthenticated = computed(() => this.tokenSignal() !== null);
-
   get token(): string | null {
-    return this.tokenSignal();
+    return this.sessionSignal()?.accessToken ?? null;
   }
 
+  /** One click, shared account, read-only. The front door. */
   async demoLogin(): Promise<void> {
-    const session = await firstValueFrom(
-      this.http.post<DemoSession>('/api/auth/demo', {}),
+    this.store(await firstValueFrom(this.http.post<Session>(`${this.base}/api/auth/demo`, {})));
+  }
+
+  /** Step one of registration — the server emails a code. */
+  register(request: RegisterRequest, demo?: string): Promise<CodeSent> {
+    const query = demo ? `?demo=${encodeURIComponent(demo)}` : '';
+    return firstValueFrom(
+      this.http.post<CodeSent>(`${this.base}/api/auth/register${query}`, request),
     );
-    localStorage.setItem(STORAGE_KEY, session.accessToken);
-    this.tokenSignal.set(session.accessToken);
+  }
+
+  /** Step two — the code proves the address and the account goes live. */
+  async verify(email: string, code: string, demo?: string): Promise<void> {
+    const query = demo ? `?demo=${encodeURIComponent(demo)}` : '';
+    this.store(
+      await firstValueFrom(
+        this.http.post<Session>(`${this.base}/api/auth/verify${query}`, { email, code }),
+      ),
+    );
+  }
+
+  requestLoginCode(email: string): Promise<CodeSent> {
+    return firstValueFrom(
+      this.http.post<CodeSent>(`${this.base}/api/auth/login/code`, { email }),
+    );
+  }
+
+  async verifyLoginCode(email: string, code: string): Promise<void> {
+    this.store(
+      await firstValueFrom(
+        this.http.post<Session>(`${this.base}/api/auth/login/verify`, { email, code }),
+      ),
+    );
   }
 
   /**
-   * Auto-starts a demo session with zero clicks if one isn't already
-   * running. Run from an APP_INITIALIZER (see app.config.ts) so it resolves
-   * before the router evaluates any guard — a recruiter landing on this
-   * demo from a LinkedIn link should see the playground itself, not a
-   * click-through gate in front of it. Failures are swallowed here on
-   * purpose: `authGuard` is the fallback that sends a visitor to `/login`
-   * (which retries this same call) if the API happened to be unreachable
-   * at boot.
+   * Swaps the refresh token for a fresh session. Returns false rather than
+   * throwing, because every caller's answer to failure is the same: show
+   * the sign-in screen.
+   *
+   * Note the identity service rotates the refresh token on every use and
+   * treats a replay as a leak, so the new one must be stored — which
+   * `store` does as a matter of course.
    */
-  async ensureSession(): Promise<void> {
-    if (this.isAuthenticated()) return;
+  refresh(): Promise<boolean> {
+    this.refreshInFlight ??= this.performRefresh().finally(() => {
+      this.refreshInFlight = null;
+    });
+    return this.refreshInFlight;
+  }
+
+  private async performRefresh(): Promise<boolean> {
+    const current = this.sessionSignal();
+    if (!current) return false;
     try {
-      await this.demoLogin();
+      this.store(
+        await firstValueFrom(
+          this.http.post<Session>(`${this.base}/api/auth/refresh`, {
+            refreshToken: current.refreshToken,
+          }),
+        ),
+      );
+      return true;
     } catch {
-      // Swallowed — authGuard redirects to /login, which offers a manual
-      // retry and a visible error instead of a silent dead app.
+      this.clear();
+      return false;
     }
   }
 
   logout(): void {
-    localStorage.removeItem(STORAGE_KEY);
-    this.tokenSignal.set(null);
+    const current = this.sessionSignal();
+    if (current) {
+      // Best-effort: revoke server-side so the refresh token cannot be
+      // reused from a stolen copy. The local session is cleared either way.
+      this.http
+        .post(`${this.base}/api/auth/signout`, {}, {
+          headers: { Authorization: `Bearer ${current.accessToken}` },
+        })
+        .subscribe({ error: () => undefined });
+    }
+    this.clear();
   }
 
   handleUnauthorized(): void {
-    this.logout();
+    this.clear();
+  }
+
+  private store(session: Session): void {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    } catch {
+      // Private browsing, or storage disabled. The session still works for
+      // this tab; it just will not survive a refresh.
+    }
+    this.sessionSignal.set(session);
+  }
+
+  private clear(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* see store() */
+    }
+    this.sessionSignal.set(null);
+  }
+}
+
+/**
+ * A stored session from an older build — or a half-written one — must not
+ * be able to break the app on load. Anything unrecognisable is discarded
+ * and the visitor simply sees the sign-in screen.
+ */
+function restore(): Session | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Session;
+    if (!parsed?.accessToken || !Array.isArray(parsed.user?.scope)) return null;
+    return parsed;
+  } catch {
+    return null;
   }
 }

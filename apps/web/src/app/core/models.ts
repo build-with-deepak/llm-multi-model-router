@@ -1,12 +1,8 @@
 /** Mirrors the API's response shapes — plain interfaces, same reasoning as
  * the sibling demos: a two-app repo doesn't need a shared-types package. */
 
-export interface DemoSession {
-  accessToken: string;
-  tokenType: 'Bearer';
-  expiresIn: string;
-  user: { id: string; name: string; kind: 'demo' };
-}
+/* The old DemoSession type lived here. Sessions now come from the
+ * identity service and are described in session.models.ts. */
 
 export interface CandidateView {
   key: string;

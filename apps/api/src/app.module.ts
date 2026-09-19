@@ -6,6 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import configuration, { AppConfig } from './config/configuration';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { ScopesGuard } from './auth/scopes.guard';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DbModule } from './db/db.module';
 import { HealthController } from './health/health.controller';
@@ -35,6 +36,9 @@ import { RouterModule } from './router/router.module';
     // flood is rejected by the cheaper guard first.
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    // After JwtAuthGuard, which is what puts the `scope` claim on the
+    // request this one reads. Guards run in registration order.
+    { provide: APP_GUARD, useClass: ScopesGuard },
   ],
 })
 export class AppModule {}

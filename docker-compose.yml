@@ -28,8 +28,9 @@ services:
       NODE_ENV: production
       PORT: 3000
       CORS_ORIGIN: https://router.build-with-deepak.com
-      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
-      DEMO_TOKEN_TTL: ${DEMO_TOKEN_TTL:-2h}
+      IDENTITY_ISSUER: ${IDENTITY_ISSUER:-https://id.build-with-deepak.com}
+      IDENTITY_JWKS_URL: ${IDENTITY_JWKS_URL:-https://id.build-with-deepak.com/.well-known/jwks.json}
+      IDENTITY_AUDIENCE: ${IDENTITY_AUDIENCE:-router.build-with-deepak.com}
       DATABASE_URL: postgres://router:${POSTGRES_PASSWORD}@postgres:5432/router
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3:8b}

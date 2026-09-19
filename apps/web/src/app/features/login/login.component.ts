@@ -1,44 +1,32 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthPanelComponent } from '../../core/auth-panel.component';
 import { AuthService } from '../../core/auth.service';
 
 /**
- * This screen is a fallback, not the primary path. The app-wide
- * APP_INITIALIZER (app.config.ts) already starts a demo session with zero
- * clicks before the router activates anything — most visitors never see
- * this page. A visitor only lands here if that start-up call failed (API
- * unreachable at boot), a session expired mid-use, or they signed out. So
- * this page retries automatically on load; the button stays for the rare
- * case that also fails.
+ * The /login route, which is now a thin wrapper around the suite's shared
+ * sign-in panel rather than its own hand-rolled card.
+ *
+ * All this adds on top of the panel is the redirect: the panel knows how to
+ * get someone signed in, and has no business knowing what this particular
+ * app wants to do afterwards.
  */
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  standalone: true,
+  imports: [AuthPanelComponent],
+  template: `<app-auth-panel demo="router" />`,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-  readonly isLoggingIn = signal(false);
-  readonly error = signal<string | null>(null);
-  readonly showRegisterModal = signal(false);
-
-  async ngOnInit(): Promise<void> {
-    await this.demoLogin();
-  }
-
-  async demoLogin(): Promise<void> {
-    if (this.isLoggingIn()) return;
-    this.error.set(null);
-    this.isLoggingIn.set(true);
-    try {
-      await this.auth.demoLogin();
-      await this.router.navigateByUrl('/');
-    } catch {
-      this.error.set('Could not start a demo session — please try again.');
-    } finally {
-      this.isLoggingIn.set(false);
-    }
+  constructor() {
+    // Covers both arriving here already signed in (a bookmarked /login) and
+    // completing a sign-in on this screen, without the panel having to call
+    // back into the router.
+    effect(() => {
+      if (this.auth.isAuthenticated()) void this.router.navigateByUrl('/');
+    });
   }
 }

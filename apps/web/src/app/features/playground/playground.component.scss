@@ -1,10 +1,196 @@
 .playground {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  max-width: 44rem;
+  gap: 1.5rem;
+  max-width: 76rem;
   margin: 0 auto;
 }
+
+/* Same page-title rhythm as the RAG and MCP primary screens. Combined with
+   the authenticated shell's 2rem top padding, this 1rem margin lands the
+   title 3rem beneath the suite navigation — exactly the RAG page spacing. */
+.page-header {
+  width: 100%;
+  margin: 1rem 0 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0 0 0.9rem;
+  color: var(--text);
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.subtitle {
+  max-width: 42rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.explainer-panel { width: 100%; }
+
+/* Widened from the old single 44rem column — same pattern as the RAG and
+   MCP demos, so the suite reads as one product rather than three
+   differently-proportioned pages. */
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 64rem) {
+  .workspace { grid-template-columns: minmax(0, 1fr); }
+}
+
+.workspace-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+/* ---- "what's happening right now" status line — same pattern as the RAG
+   and MCP demos. ---- */
+.status-line {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.status-dots {
+  display: inline-flex;
+  gap: 0.2rem;
+
+  span {
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: status-pulse 1.2s ease-in-out infinite;
+
+    &:nth-child(2) { animation-delay: 0.15s; }
+    &:nth-child(3) { animation-delay: 0.3s; }
+  }
+}
+
+@keyframes status-pulse {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dots span { animation: none; opacity: 0.7; }
+}
+
+/* ---- guide sidebar — same visual language as the RAG and MCP demos'. ---- */
+.guide {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.guide-block {
+  padding: 1.1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.guide-eyebrow {
+  margin: 0 0 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.guide-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.guide-steps li {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.1rem;
+}
+
+.guide-steps strong {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.15rem;
+}
+
+.guide-steps p,
+.guide-copy {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.guide-copy strong { color: var(--accent); }
+
+.guide-note { background: var(--accent-bg); border-color: transparent; }
+.guide-note .guide-eyebrow { color: var(--text); }
+.guide-note .guide-copy { color: var(--text); }
+
+.dim-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dim-list li {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.dim-list strong { color: var(--text); }
 
 .prompt-form {
   display: flex;
@@ -100,6 +286,17 @@
     line-height: 1.65;
     color: var(--text-muted);
   }
+
+  .explainer-session {
+    margin: 0.85rem 0 0;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+  }
+
+  .explainer-session strong { color: var(--text); }
 }
 
 .cost-panel {

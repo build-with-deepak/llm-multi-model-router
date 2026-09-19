@@ -5,6 +5,27 @@
   <title>Multi-Model Router · build-with-deepak.com</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <script>
+    // Theme bootstrap: stamp data-theme before first paint (no flash of wrong theme).
+    // Reads the bwd-theme COOKIE (not localStorage) — a cookie set with
+    // Domain=.build-with-deepak.com by ThemeService on any subdomain is sent
+    // to every other one, which is what makes "toggle dark mode on the main
+    // site, see it on the demos" work. This exact script is duplicated,
+    // verbatim, into every app in the suite; keep them in sync by hand.
+    (function () {
+      try {
+        var match = document.cookie.match(/(?:^|;\s*)bwd-theme=([^;]*)/);
+        var stored = match ? decodeURIComponent(match[1]) : null;
+        var theme = (stored === 'light' || stored === 'dark')
+          ? stored
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
+      } catch (e) { /* default light */ }
+    })();
+  </script>
   <meta name="description" content="Watch each LLM request routed between local inference and cloud models on cost, latency and data sensitivity. A live demo by Deepak Kumar Jha, Senior Full-Stack Engineer · Technical Lead.">
   <meta name="author" content="Deepak Kumar Jha">
   <link rel="icon" type="image/x-icon" href="favicon.ico">

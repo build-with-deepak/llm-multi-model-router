@@ -63,7 +63,7 @@ const EXAMPLE_PROMPTS: ExamplePrompt[] = [
   styleUrl: './playground.component.scss',
 })
 export class PlaygroundComponent implements OnDestroy {
-  private readonly auth = inject(AuthService);
+  readonly auth = inject(AuthService);
   readonly sessionCost = inject(SessionCostService);
   private abortController: AbortController | null = null;
 
